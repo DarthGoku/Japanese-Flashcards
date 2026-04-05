@@ -310,7 +310,7 @@ body::before {
 
 .card-wrapper {
   width: 100%;
-  min-height: 380px;
+  height: 380px;        /* fixed height — faces fill via inset:0 */
   position: relative;
   transform-style: preserve-3d;
   transition: transform 0.65s cubic-bezier(0.4, 0.2, 0.2, 1);
@@ -337,7 +337,7 @@ body::before {
   text-align: center;
   box-shadow: var(--shadow);
   border: 1.5px solid var(--glass-border);
-  min-height: 380px;
+  /* no min-height — wrapper height controls size via inset:0 */
 }
 
 .card-front {
@@ -981,10 +981,8 @@ body::before {
     position: relative;
     z-index: 0;
   }
-  .card-wrapper { width: 100%; min-height: 270px; }
+  .card-wrapper { width: 100%; height: 300px; }
   .card-face {
-    width: 100%;
-    min-height: 270px;
     padding: 20px 16px;
   }
   .card-badges {
