@@ -353,6 +353,67 @@ body::before {
   transform: rotateY(180deg);
 }
 
+/* Voice button */
+.voice-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(201,184,232,0.5);
+  background: rgba(255,255,255,0.7);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--lavender-deep);
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  backdrop-filter: blur(8px);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.voice-btn:hover {
+  background: rgba(201,184,232,0.25);
+  border-color: var(--lavender-deep);
+  transform: scale(1.08);
+}
+.voice-btn.speaking {
+  background: linear-gradient(135deg, var(--lavender), var(--sky));
+  border-color: transparent;
+  color: white;
+  animation: pulse-voice 0.8s ease-in-out infinite alternate;
+}
+@keyframes pulse-voice {
+  from { transform: scale(1); box-shadow: 0 0 0 0 rgba(160,144,204,0.4); }
+  to   { transform: scale(1.1); box-shadow: 0 0 0 8px rgba(160,144,204,0); }
+}
+
+/* Card back voice button wrapper */
+.card-voice-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+/* Result item voice */
+.result-voice-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.result-voice-row .result-hiragana {
+  flex: 1;
+}
+.voice-btn-sm {
+  width: 30px;
+  height: 30px;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
 .card-face.known-card {
   box-shadow: 0 0 0 3px rgba(107,203,139,0.5), var(--shadow);
 }
@@ -1140,7 +1201,10 @@ body::before {
         <div class="card-face card-back" id="cardBack">
           <div class="card-badges" id="cardBackBadges"></div>
           <div class="card-romaji" id="cardRomaji"></div>
-          <div class="card-hiragana" id="cardHiragana"></div>
+          <div class="card-voice-row">
+            <div class="card-hiragana" id="cardHiragana"></div>
+            <button class="voice-btn" id="cardVoiceBtn" onclick="speakCard(event)" title="Hear pronunciation">🔊</button>
+          </div>
           <div class="card-alternates" id="cardAlternates" style="display:none">
             <div class="alternates-label">Also expressed as</div>
             <div id="alternatesList"></div>
@@ -3941,7 +4005,10 @@ function doSearch() {
     <div class="result-item" onclick="jumpToCard('${cardKey(v).replace(/'/g, "\\'")}')">
       <div class="result-english">${v.english}</div>
       <div class="result-romaji">${v.romaji}</div>
-      <div class="result-hiragana">${v.hiragana}</div>
+      <div class="result-voice-row">
+        <div class="result-hiragana">${v.hiragana}</div>
+        <button class="voice-btn voice-btn-sm" onclick="event.stopPropagation(); speakText('${v.hiragana.replace(/'/g,"\\'")}')" title="Hear pronunciation">🔊</button>
+      </div>
       ${v.alternates.length > 0 ? `<div class="result-alts">Also: ${v.alternates.join(", ")}</div>` : ""}
     </div>
   `).join("");
@@ -4051,6 +4118,95 @@ function init() {
 }
 
 init();
+
+// ═══════════════════════════════════════════════════════
+// VOICE / TEXT-TO-SPEECH
+// ═══════════════════════════════════════════════════════
+let voiceReady = false;
+let jpVoice = null;
+
+function initVoice() {
+  if (!('speechSynthesis' in window)) return;
+  function pickVoice() {
+    const voices = window.speechSynthesis.getVoices();
+    if (!voices.length) return;
+
+    // Priority order: male Japanese voices
+    // Chrome/Edge on iOS/macOS: "Otoya" (male JP), "Kyoko" (female JP)
+    // Android: "ja-JP" voices
+    const preferred = [
+      'Otoya',           // macOS/iOS male Japanese
+      'Google 日本語',    // Android/Chrome male
+      'Microsoft Ichiro', // Windows male JP
+      'Microsoft Keita',  // Windows male JP
+    ];
+
+    // Try preferred male voices first
+    for (const name of preferred) {
+      const v = voices.find(v => v.name.includes(name));
+      if (v) { jpVoice = v; voiceReady = true; return; }
+    }
+
+    // Fall back: any Japanese voice (preferring male-sounding names)
+    const jpVoices = voices.filter(v => v.lang.startsWith('ja'));
+    if (jpVoices.length) {
+      // Avoid known female voices
+      const female = ['Kyoko','Haruka','Nanami','Google 日本語 Female'];
+      const male = jpVoices.find(v => !female.some(f => v.name.includes(f)));
+      jpVoice = male || jpVoices[0];
+      voiceReady = true;
+    }
+  }
+
+  pickVoice();
+  // voices load async on some browsers
+  window.speechSynthesis.onvoiceschanged = pickVoice;
+}
+
+function speakText(text, btnEl) {
+  if (!('speechSynthesis' in window)) {
+    alert('Sorry, your browser does not support speech synthesis.');
+    return;
+  }
+  if (!voiceReady) initVoice();
+
+  // Cancel any ongoing speech
+  window.speechSynthesis.cancel();
+
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang = 'ja-JP';
+  utt.rate = 0.85;   // slightly slower for clarity
+  utt.pitch = 0.9;   // slightly lower for male tone
+  utt.volume = 1;
+  if (jpVoice) utt.voice = jpVoice;
+
+  // Animate button while speaking
+  const btn = btnEl || document.getElementById('cardVoiceBtn');
+  if (btn) {
+    btn.classList.add('speaking');
+    btn.textContent = '🔈';
+    utt.onend = () => {
+      btn.classList.remove('speaking');
+      btn.textContent = '🔊';
+    };
+    utt.onerror = () => {
+      btn.classList.remove('speaking');
+      btn.textContent = '🔊';
+    };
+  }
+
+  window.speechSynthesis.speak(utt);
+}
+
+function speakCard(event) {
+  event.stopPropagation(); // don't flip card on button click
+  const hiragana = document.getElementById('cardHiragana').textContent;
+  if (!hiragana) return;
+  speakText(hiragana, event.currentTarget);
+}
+
+// Init voice engine on load
+initVoice();
 </script>
 </body>
 </html>
