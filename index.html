@@ -44,10 +44,10 @@
 body {
   font-family: var(--font-ui);
   background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-mid) 50%, var(--bg-end) 100%);
-  background-attachment: fixed;
   min-height: 100vh;
   color: var(--charcoal);
   overflow-x: hidden;
+  /* no background-attachment:fixed — breaks iOS Safari */
 }
 
 body::before {
@@ -844,52 +844,82 @@ body::before {
 
 /* ── MOBILE (iPhone & small screens) ──────────────── */
 @media (max-width: 700px) {
-  /* Reset layout to single column */
-  .app-layout {
-    grid-template-columns: 1fr;
-    padding: 8px;
-    gap: 12px;
+
+  /* ── Prevent ALL horizontal overflow ── */
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body {
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
   }
 
-  /* Header compact */
+  /* ── Header ── */
   .app-header {
-    padding: 10px 14px;
-    flex-wrap: wrap;
-    gap: 6px;
+    padding: 10px 12px;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
   }
-  .app-logo .jp-title { font-size: 1.2rem; }
-  .app-logo .en-title { font-size: 0.9rem; }
-  .header-stats { font-size: 0.72rem; gap: 10px; }
+  .app-logo { flex-shrink: 0; gap: 6px; }
+  .app-logo .jp-title { font-size: 1.1rem; }
+  .app-logo .en-title { font-size: 0.78rem; }
+  .header-stats {
+    flex-wrap: nowrap;
+    gap: 8px;
+    font-size: 0.66rem;
+    flex-shrink: 1;
+    min-width: 0;
+    justify-content: flex-end;
+  }
+  .header-stat { gap: 3px; white-space: nowrap; }
+  .header-stat strong { font-size: 0.74rem; }
 
-  /* Sidebars: static, no sticky */
-  .sidebar-left, .sidebar-right {
-    position: static;
-    max-height: none;
+  /* ── Layout: single column, no sideways ── */
+  .app-layout {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 8px;
+    gap: 10px;
+    min-height: unset;
   }
 
-  /* Category sidebar: collapsed by default, horizontal scroll */
+  /* ── Left sidebar ── */
+  .sidebar-left { width: 100%; }
   .sidebar-left .glass-panel {
+    width: 100%;
     max-height: none;
     overflow: visible;
   }
+  .panel-header { padding: 10px 12px 6px; }
+  .panel-title { font-size: 0.95rem; }
+  .panel-subtitle { font-size: 0.62rem; }
+
+  /* Category pills — horizontal scroll strip (contained, no page scroll) */
   .category-scroll {
     display: flex;
     flex-direction: row;
     overflow-x: auto;
     overflow-y: hidden;
-    padding: 6px 8px;
-    gap: 6px;
-    scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
+    padding: 6px 8px 8px;
+    gap: 6px;
+    max-height: none;
+    scrollbar-width: none;
+    width: 100%;
   }
   .category-scroll::-webkit-scrollbar { display: none; }
+
   .category-item {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    min-width: 72px;
-    max-width: 72px;
-    padding: 8px 6px;
+    flex-shrink: 0;
+    width: 68px;
+    min-width: 68px;
+    max-width: 68px;
+    padding: 7px 4px;
     border-left: none;
     border-bottom: 3px solid transparent;
     border-radius: 10px;
@@ -900,88 +930,130 @@ body::before {
     border-bottom-color: var(--lavender-deep);
     background: rgba(201,184,232,0.25);
   }
-  .category-icon { font-size: 1.3rem; }
-  .category-name { font-size: 0.58rem; line-height: 1.2; }
-  .category-count { font-size: 0.6rem; padding: 1px 5px; }
+  .category-icon { font-size: 1.2rem; width: auto; flex-shrink: 0; }
+  .category-name {
+    font-size: 0.56rem;
+    line-height: 1.2;
+    white-space: normal;
+    word-break: break-word;
+  }
+  .category-count { font-size: 0.56rem; padding: 1px 4px; }
 
-  /* Difficulty filter: horizontal row */
-  .difficulty-filter { padding: 8px 12px; }
-  .difficulty-btns { flex-direction: row; flex-wrap: nowrap; gap: 4px; }
-  .diff-btn { font-size: 0.65rem; padding: 5px 6px; flex: 1; white-space: nowrap; }
+  /* Difficulty filter */
+  .difficulty-filter { padding: 8px 10px 10px; }
+  .difficulty-label { font-size: 0.62rem; margin-bottom: 5px; }
+  .difficulty-btns { flex-wrap: nowrap; gap: 4px; }
+  .diff-btn {
+    flex: 1;
+    font-size: 0.6rem;
+    padding: 6px 2px;
+    white-space: nowrap;
+    min-height: 36px;
+  }
 
-  /* Card — full width, taller on mobile */
+  /* ── Center — flashcard ── */
+  .center-panel { width: 100%; gap: 12px; }
   .flashcard-area { width: 100%; }
-  .card-wrapper { min-height: 300px; }
-  .card-face { min-height: 300px; padding: 24px 20px; }
-  .card-english { font-size: 1.9rem; }
-  .card-hiragana { font-size: 2rem; }
-  .card-romaji { font-size: 1.5rem; }
-  .card-badges { gap: 6px; margin-bottom: 14px; flex-wrap: wrap; justify-content: center; }
-  .badge { font-size: 0.62rem; padding: 3px 9px; }
-  .card-alternates { padding: 10px 14px; }
-  .alternate-item { font-size: 0.76rem; }
-
-  /* Controls: wrap nicely, bigger tap targets */
-  .card-controls {
-    gap: 8px;
+  .card-wrapper { width: 100%; min-height: 280px; }
+  .card-face {
+    width: 100%;
+    min-height: 280px;
+    padding: 22px 16px;
+  }
+  .card-badges {
+    gap: 5px;
+    margin-bottom: 12px;
     flex-wrap: wrap;
     justify-content: center;
   }
+  .badge { font-size: 0.58rem; padding: 3px 8px; }
+  .card-english { font-size: 1.75rem; line-height: 1.2; }
+  .card-romaji { font-size: 1.35rem; margin-bottom: 8px; }
+  .card-hiragana { font-size: 1.8rem; margin-bottom: 12px; }
+  .flip-hint { font-size: 0.62rem; margin-top: 10px; }
+  .card-alternates { padding: 9px 12px; }
+  .alternates-label { font-size: 0.6rem; }
+  .alternate-item { font-size: 0.73rem; }
+
+  /* Controls: all contained, wrap cleanly */
+  .card-controls {
+    width: 100%;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 0 4px;
+  }
+  .card-counter {
+    font-size: 0.7rem;
+    min-width: unset;
+    width: 100%;
+    text-align: center;
+    order: -1;
+  }
   .ctrl-btn {
-    padding: 11px 14px;
-    font-size: 0.8rem;
-    min-height: 44px; /* iOS tap target */
+    padding: 10px 12px;
+    font-size: 0.76rem;
+    min-height: 44px;
+    min-width: unset;
+    flex-shrink: 1;
   }
   .ctrl-btn.nav-btn {
-    padding: 11px 18px;
-    font-size: 1.2rem;
-    min-width: 50px;
+    padding: 10px 16px;
+    font-size: 1.15rem;
+    min-width: 44px;
   }
-  .card-counter { font-size: 0.76rem; min-width: 80px; }
 
-  /* Right sidebar: stack panels */
+  /* ── Right sidebar ── */
   .sidebar-right {
+    width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
+    position: static;
+    max-height: none;
     overflow: visible;
   }
 
   /* Translator */
-  .translator-panel { padding: 14px; }
-  .direction-toggle { gap: 6px; }
-  .dir-btn { padding: 8px 6px; font-size: 0.72rem; min-height: 40px; }
-  .search-input { padding: 10px 13px; font-size: 0.88rem; }
-  .search-results { max-height: 200px; }
-  .result-item { padding: 9px 12px; }
-  .result-english { font-size: 0.83rem; }
-  .result-hiragana { font-size: 0.95rem; }
+  .translator-panel { padding: 12px; }
+  .direction-toggle { gap: 5px; }
+  .dir-btn { font-size: 0.68rem; padding: 8px 4px; min-height: 40px; flex: 1; }
+  .search-input { width: 100%; font-size: 0.85rem; padding: 10px 12px; }
+  .search-results { max-height: 190px; }
+  .result-item { padding: 8px 10px; }
+  .result-english { font-size: 0.78rem; }
+  .result-romaji { font-size: 0.72rem; }
+  .result-hiragana { font-size: 0.9rem; }
+  .result-alts { font-size: 0.64rem; }
 
-  /* Progress panel */
-  .progress-panel { padding: 14px; }
-  .progress-overview { grid-template-columns: 1fr 1fr; gap: 8px; }
-  .stat-value { font-size: 1.3rem; }
-  .stat-label { font-size: 0.6rem; }
+  /* Progress */
+  .progress-panel { padding: 12px; }
+  .progress-overview { grid-template-columns: 1fr 1fr; gap: 7px; }
+  .stat-box { padding: 9px 8px; }
+  .stat-value { font-size: 1.25rem; }
+  .stat-label { font-size: 0.58rem; }
+  .main-progress-bar { margin: 10px 0; }
   .category-progress-list { max-height: 160px; }
-  .cat-progress-name { font-size: 0.62rem; width: 75px; }
-
-  /* Panel headers */
-  .panel-title { font-size: 1rem; }
-  .panel-subtitle { font-size: 0.65rem; }
+  .cat-progress-row { gap: 6px; }
+  .cat-progress-icon { font-size: 0.75rem; width: 16px; }
+  .cat-progress-name { font-size: 0.6rem; width: 68px; }
+  .cat-progress-num { font-size: 0.58rem; min-width: 26px; }
+  .reset-btn { font-size: 0.75rem; padding: 9px; }
 
   /* Footer */
-  .app-footer { font-size: 0.65rem; padding: 14px; }
+  .app-footer { font-size: 0.62rem; padding: 12px 8px; text-align: center; }
 }
 
 /* ── VERY SMALL (SE / narrow) ──────────────────────── */
-@media (max-width: 390px) {
-  .card-english { font-size: 1.6rem; }
-  .card-hiragana { font-size: 1.7rem; }
-  .card-romaji { font-size: 1.3rem; }
-  .ctrl-btn { font-size: 0.72rem; padding: 10px 10px; }
-  .ctrl-btn.nav-btn { padding: 10px 14px; }
-  .category-item { min-width: 64px; max-width: 64px; }
-  .category-name { font-size: 0.54rem; }
+@media (max-width: 375px) {
+  .card-english { font-size: 1.5rem; }
+  .card-hiragana { font-size: 1.6rem; }
+  .card-romaji { font-size: 1.2rem; }
+  .ctrl-btn { font-size: 0.68rem; padding: 9px 8px; }
+  .ctrl-btn.nav-btn { padding: 9px 12px; min-width: 40px; }
+  .category-item { width: 60px; min-width: 60px; max-width: 60px; }
+  .category-name { font-size: 0.52rem; }
+  .header-stats { display: none; } /* hide stats on very narrow to prevent overflow */
 }
 </style>
 </head>
@@ -3471,6 +3543,8 @@ const VOCAB = [
 {english:"to say (humble)",romaji:"moushimasu",hiragana:"もうします",alternates:["humble say / my name is"],category:"Verbs (Action Words)",type:"verb",difficulty:"advanced"},
 {english:"to give (humble — upward)",romaji:"sashiageru",hiragana:"さしあげる",alternates:["humble give to superior"],category:"Verbs (Action Words)",type:"verb",difficulty:"advanced"},
 {english:"to know (respectful)",romaji:"gozonji",hiragana:"ごぞんじ",alternates:["do you know (polite)"],category:"Verbs (Action Words)",type:"verb",difficulty:"advanced"},
+// ── Added word: dish
+{english:"dish / course",romaji:"ryouri / issara",hiragana:"りょうり・いっさら",alternates:["okazu (side dish)","hitosara (one plate)"],category:"Food & Drink",type:"noun",difficulty:"beginner"},
 ];
 
 // ═══════════════════════════════════════════════════════
