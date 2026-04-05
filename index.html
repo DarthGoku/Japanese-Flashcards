@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>日本語 — Japanese Daily Vocabulary</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -72,6 +72,8 @@ body::before {
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--glass-border);
   padding: 14px 28px;
+  padding-left: max(28px, env(safe-area-inset-left));
+  padding-right: max(28px, env(safe-area-inset-right));
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -311,6 +313,8 @@ body::before {
   transform-style: preserve-3d;
   transition: transform 0.65s cubic-bezier(0.4, 0.2, 0.2, 1);
   cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .card-wrapper.flipped {
@@ -473,6 +477,9 @@ body::before {
   color: var(--charcoal-soft);
   transition: all 0.2s ease;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 44px;
 }
 
 .ctrl-btn:hover {
@@ -826,25 +833,155 @@ body::before {
 }
 
 /* MOBILE */
-@media (max-width: 900px) {
+/* ── TABLET ────────────────────────────────────────── */
+@media (max-width: 1100px) and (min-width: 701px) {
+  .app-layout {
+    grid-template-columns: 220px 1fr 260px;
+    gap: 14px;
+    padding: 16px 12px;
+  }
+}
+
+/* ── MOBILE (iPhone & small screens) ──────────────── */
+@media (max-width: 700px) {
+  /* Reset layout to single column */
   .app-layout {
     grid-template-columns: 1fr;
-    padding: 12px;
-    gap: 16px;
+    padding: 8px;
+    gap: 12px;
   }
+
+  /* Header compact */
+  .app-header {
+    padding: 10px 14px;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .app-logo .jp-title { font-size: 1.2rem; }
+  .app-logo .en-title { font-size: 0.9rem; }
+  .header-stats { font-size: 0.72rem; gap: 10px; }
+
+  /* Sidebars: static, no sticky */
   .sidebar-left, .sidebar-right {
     position: static;
     max-height: none;
   }
+
+  /* Category sidebar: collapsed by default, horizontal scroll */
   .sidebar-left .glass-panel {
-    max-height: 400px;
-  }
-  .sidebar-right {
+    max-height: none;
     overflow: visible;
   }
-  .card-english { font-size: 2rem; }
+  .category-scroll {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 6px 8px;
+    gap: 6px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .category-scroll::-webkit-scrollbar { display: none; }
+  .category-item {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    min-width: 72px;
+    max-width: 72px;
+    padding: 8px 6px;
+    border-left: none;
+    border-bottom: 3px solid transparent;
+    border-radius: 10px;
+    gap: 3px;
+  }
+  .category-item.active {
+    border-left-color: transparent;
+    border-bottom-color: var(--lavender-deep);
+    background: rgba(201,184,232,0.25);
+  }
+  .category-icon { font-size: 1.3rem; }
+  .category-name { font-size: 0.58rem; line-height: 1.2; }
+  .category-count { font-size: 0.6rem; padding: 1px 5px; }
+
+  /* Difficulty filter: horizontal row */
+  .difficulty-filter { padding: 8px 12px; }
+  .difficulty-btns { flex-direction: row; flex-wrap: nowrap; gap: 4px; }
+  .diff-btn { font-size: 0.65rem; padding: 5px 6px; flex: 1; white-space: nowrap; }
+
+  /* Card — full width, taller on mobile */
+  .flashcard-area { width: 100%; }
+  .card-wrapper { min-height: 300px; }
+  .card-face { min-height: 300px; padding: 24px 20px; }
+  .card-english { font-size: 1.9rem; }
   .card-hiragana { font-size: 2rem; }
   .card-romaji { font-size: 1.5rem; }
+  .card-badges { gap: 6px; margin-bottom: 14px; flex-wrap: wrap; justify-content: center; }
+  .badge { font-size: 0.62rem; padding: 3px 9px; }
+  .card-alternates { padding: 10px 14px; }
+  .alternate-item { font-size: 0.76rem; }
+
+  /* Controls: wrap nicely, bigger tap targets */
+  .card-controls {
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .ctrl-btn {
+    padding: 11px 14px;
+    font-size: 0.8rem;
+    min-height: 44px; /* iOS tap target */
+  }
+  .ctrl-btn.nav-btn {
+    padding: 11px 18px;
+    font-size: 1.2rem;
+    min-width: 50px;
+  }
+  .card-counter { font-size: 0.76rem; min-width: 80px; }
+
+  /* Right sidebar: stack panels */
+  .sidebar-right {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow: visible;
+  }
+
+  /* Translator */
+  .translator-panel { padding: 14px; }
+  .direction-toggle { gap: 6px; }
+  .dir-btn { padding: 8px 6px; font-size: 0.72rem; min-height: 40px; }
+  .search-input { padding: 10px 13px; font-size: 0.88rem; }
+  .search-results { max-height: 200px; }
+  .result-item { padding: 9px 12px; }
+  .result-english { font-size: 0.83rem; }
+  .result-hiragana { font-size: 0.95rem; }
+
+  /* Progress panel */
+  .progress-panel { padding: 14px; }
+  .progress-overview { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .stat-value { font-size: 1.3rem; }
+  .stat-label { font-size: 0.6rem; }
+  .category-progress-list { max-height: 160px; }
+  .cat-progress-name { font-size: 0.62rem; width: 75px; }
+
+  /* Panel headers */
+  .panel-title { font-size: 1rem; }
+  .panel-subtitle { font-size: 0.65rem; }
+
+  /* Footer */
+  .app-footer { font-size: 0.65rem; padding: 14px; }
+}
+
+/* ── VERY SMALL (SE / narrow) ──────────────────────── */
+@media (max-width: 390px) {
+  .card-english { font-size: 1.6rem; }
+  .card-hiragana { font-size: 1.7rem; }
+  .card-romaji { font-size: 1.3rem; }
+  .ctrl-btn { font-size: 0.72rem; padding: 10px 10px; }
+  .ctrl-btn.nav-btn { padding: 10px 14px; }
+  .category-item { min-width: 64px; max-width: 64px; }
+  .category-name { font-size: 0.54rem; }
 }
 </style>
 </head>
@@ -3160,6 +3297,180 @@ const VOCAB = [
 {english:"joint (body)",romaji:"kansetsu",hiragana:"かんせつ",alternates:[],category:"Body Parts",type:"noun",difficulty:"advanced"},
 {english:"I'm joking / just kidding",romaji:"jodan desu yo",hiragana:"じょうだんですよ",alternates:["uso (just kidding casual)"],category:"Common Phrases & Expressions",type:"expression",difficulty:"beginner"},
 {english:"look at me / look here",romaji:"koko mite",hiragana:"ここみて",alternates:["yoko miro (look here)"],category:"Common Phrases & Expressions",type:"expression",difficulty:"beginner"},
+// ── Restaurant, Shopping & Tae Kim's Guide ─────────
+{english:"what do you recommend?",romaji:"osusume wa nan desu ka",hiragana:"おすすめはなんですか",alternates:["osusume wa? (casual)"],category:"Food & Drink",type:"expression",difficulty:"beginner"},
+{english:"the bill please",romaji:"o-kaikei kudasai",hiragana:"おかいけいください",alternates:["okaikei onegaishimasu"],category:"Food & Drink",type:"expression",difficulty:"beginner"},
+{english:"is service charge included?",romaji:"saabisu ryou wa fukumarete imasu ka",hiragana:"サービスりょうはふくまれていますか",alternates:[],category:"Food & Drink",type:"expression",difficulty:"intermediate"},
+{english:"not too spicy please",romaji:"amari karakunai you ni shite kudasai",hiragana:"あまりからくないようにしてください",alternates:[],category:"Food & Drink",type:"expression",difficulty:"intermediate"},
+{english:"for ~ people",romaji:"~ nin de",hiragana:"〜にんで",alternates:["futari de (for two)"],category:"Food & Drink",type:"expression",difficulty:"beginner"},
+{english:"split the bill",romaji:"warikan ni shite kudasai",hiragana:"わりかんにしてください",alternates:["betsu betsu ni (separately)"],category:"Food & Drink",type:"expression",difficulty:"intermediate"},
+{english:"takeaway / to go",romaji:"teiku auto",hiragana:"テイクアウト",alternates:["mochikaeri (to take home)"],category:"Food & Drink",type:"noun",difficulty:"beginner"},
+{english:"last orders",romaji:"rasuto oodaa",hiragana:"ラストオーダー",alternates:[],category:"Food & Drink",type:"noun",difficulty:"intermediate"},
+{english:"water please (restaurant)",romaji:"o-mizu wo kudasai",hiragana:"おみずをください",alternates:[],category:"Food & Drink",type:"expression",difficulty:"beginner"},
+{english:"refill please",romaji:"o-kawari kudasai",hiragana:"おかわりください",alternates:[],category:"Food & Drink",type:"expression",difficulty:"beginner"},
+{english:"set meal / combo",romaji:"setto",hiragana:"セット",alternates:["teishoku (Japanese set meal)"],category:"Food & Drink",type:"noun",difficulty:"beginner"},
+{english:"drink bar (all-you-can-drink station)",romaji:"dorinkku baa",hiragana:"ドリンクバー",alternates:[],category:"Food & Drink",type:"noun",difficulty:"beginner"},
+{english:"lunch special",romaji:"ranchi setto",hiragana:"ランチセット",alternates:[],category:"Food & Drink",type:"noun",difficulty:"beginner"},
+{english:"waiter / waitress",romaji:"ueetaa / ueetoresu",hiragana:"ウェーター・ウェートレス",alternates:["suutafu (staff)"],category:"Food & Drink",type:"noun",difficulty:"beginner"},
+{english:"chef",romaji:"shefu",hiragana:"シェフ",alternates:["itamae (sushi chef)"],category:"Food & Drink",type:"noun",difficulty:"beginner"},
+{english:"this is not what I ordered",romaji:"chuumon shita mono to chigaimasu",hiragana:"ちゅうもんしたものとちがいます",alternates:[],category:"Food & Drink",type:"expression",difficulty:"intermediate"},
+{english:"can I try this on?",romaji:"shichaku shite mo ii desu ka",hiragana:"しちゃくしてもいいですか",alternates:[],category:"Shopping & Money",type:"expression",difficulty:"beginner"},
+{english:"fitting room",romaji:"shichakushitsu",hiragana:"しちゃくしつ",alternates:["doresshingu ruumu"],category:"Shopping & Money",type:"noun",difficulty:"beginner"},
+{english:"I'm just looking",romaji:"mite iru dake desu",hiragana:"みているだけです",alternates:["mite iru dake (casual)"],category:"Shopping & Money",type:"expression",difficulty:"beginner"},
+{english:"can I pay by card?",romaji:"kaado de haraemasu ka",hiragana:"カードではらえますか",alternates:[],category:"Shopping & Money",type:"expression",difficulty:"beginner"},
+{english:"do you accept IC card?",romaji:"IC kaado wa tsukaemasu ka",hiragana:"ICカードはつかえますか",alternates:[],category:"Shopping & Money",type:"expression",difficulty:"beginner"},
+{english:"can I return this?",romaji:"henpin dekimasu ka",hiragana:"へんぴんできますか",alternates:[],category:"Shopping & Money",type:"expression",difficulty:"intermediate"},
+{english:"do you have tax-free shopping?",romaji:"menzei dekimasu ka",hiragana:"めんぜいできますか",alternates:[],category:"Shopping & Money",type:"expression",difficulty:"intermediate"},
+{english:"do you gift wrap?",romaji:"purezento you ni tsutsunde moraemasu ka",hiragana:"プレゼントようにつつんでもらえますか",alternates:[],category:"Shopping & Money",type:"expression",difficulty:"intermediate"},
+{english:"limited edition",romaji:"gentei",hiragana:"げんてい",alternates:["rimiteddo (limited loanword)"],category:"Shopping & Money",type:"noun",difficulty:"intermediate"},
+{english:"new arrival",romaji:"shinnyuuka",hiragana:"しんにゅうか",alternates:["nyuu airaibaru (loanword)"],category:"Shopping & Money",type:"noun",difficulty:"intermediate"},
+{english:"stock",romaji:"zaiko",hiragana:"ざいこ",alternates:["sutokku (stock loanword)"],category:"Shopping & Money",type:"noun",difficulty:"intermediate"},
+{english:"shopping cart",romaji:"kaato",hiragana:"カート",alternates:[],category:"Shopping & Money",type:"noun",difficulty:"beginner"},
+{english:"delivery",romaji:"haitatsu",hiragana:"はいたつ",alternates:["deriberī (delivery loanword)"],category:"Shopping & Money",type:"noun",difficulty:"beginner"},
+{english:"express delivery",romaji:"sokutatu",hiragana:"そくたつ",alternates:[],category:"Shopping & Money",type:"noun",difficulty:"intermediate"},
+{english:"to exist (polite — animate)",romaji:"imasu",hiragana:"います",alternates:["iru (plain form)"],category:"Particles & Grammar",type:"verb",difficulty:"beginner"},
+{english:"to exist (polite — inanimate)",romaji:"arimasu",hiragana:"あります",alternates:["aru (plain form)"],category:"Particles & Grammar",type:"verb",difficulty:"beginner"},
+{english:"negative form (verb ~nai)",romaji:"~nai",hiragana:"〜ない",alternates:["~masen (polite negative)"],category:"Particles & Grammar",type:"particle",difficulty:"beginner"},
+{english:"past tense (verb ~ta)",romaji:"~ta / ~da",hiragana:"〜た・〜だ",alternates:["~mashita (polite past)"],category:"Particles & Grammar",type:"particle",difficulty:"beginner"},
+{english:"negative past (~nakatta)",romaji:"~nakatta",hiragana:"〜なかった",alternates:["~masen deshita (polite negative past)"],category:"Particles & Grammar",type:"particle",difficulty:"beginner"},
+{english:"have to / must (~nakereba)",romaji:"~nakereba naranai",hiragana:"〜なければならない",alternates:["~nai to ikenai (casual must)"],category:"Particles & Grammar",type:"expression",difficulty:"intermediate"},
+{english:"don't have to (~nakute mo ii)",romaji:"~nakute mo ii",hiragana:"〜なくてもいい",alternates:[],category:"Particles & Grammar",type:"expression",difficulty:"intermediate"},
+{english:"can / able to (~rareru / dekiru)",romaji:"dekiru / rareru",hiragana:"できる・られる",alternates:[],category:"Particles & Grammar",type:"expression",difficulty:"beginner"},
+{english:"passive form (~reru / ~rareru)",romaji:"~reru / ~rareru",hiragana:"〜れる・〜られる",alternates:[],category:"Particles & Grammar",type:"particle",difficulty:"intermediate"},
+{english:"if / when (plain + to)",romaji:"plain + to",hiragana:"〜と",alternates:[],category:"Particles & Grammar",type:"particle",difficulty:"intermediate"},
+{english:"before doing (~mae ni)",romaji:"~mae ni",hiragana:"〜まえに",alternates:[],category:"Particles & Grammar",type:"expression",difficulty:"beginner"},
+{english:"without doing (~zu ni)",romaji:"~zu ni",hiragana:"〜ずに",alternates:[],category:"Particles & Grammar",type:"particle",difficulty:"intermediate"},
+{english:"in order to (~tame ni)",romaji:"~tame ni",hiragana:"〜ために",alternates:[],category:"Particles & Grammar",type:"particle",difficulty:"intermediate"},
+{english:"so that / come to (~you ni)",romaji:"~you ni naru",hiragana:"〜ようになる",alternates:[],category:"Particles & Grammar",type:"expression",difficulty:"intermediate"},
+{english:"it seems / looks like (~sou da)",romaji:"~sou da",hiragana:"〜そうだ",alternates:[],category:"Particles & Grammar",type:"expression",difficulty:"intermediate"},
+{english:"should do (~hou ga ii)",romaji:"~hou ga ii",hiragana:"〜ほうがいい",alternates:[],category:"Particles & Grammar",type:"expression",difficulty:"intermediate"},
+{english:"plain / dictionary form",romaji:"jishokei",hiragana:"じしょけい",alternates:["kihon kei (base form)"],category:"Language & Speech",type:"noun",difficulty:"intermediate"},
+{english:"polite form",romaji:"teineikei",hiragana:"ていねいけい",alternates:["masu form"],category:"Language & Speech",type:"noun",difficulty:"intermediate"},
+{english:"te-form",romaji:"tekei",hiragana:"てけい",alternates:["te-form (connecting form)"],category:"Language & Speech",type:"noun",difficulty:"intermediate"},
+{english:"group 1 verb (u-verb)",romaji:"godan doushi",hiragana:"ごだんどうし",alternates:["u-verb"],category:"Language & Speech",type:"noun",difficulty:"intermediate"},
+{english:"group 2 verb (ru-verb)",romaji:"ichidan doushi",hiragana:"いちだんどうし",alternates:["ru-verb"],category:"Language & Speech",type:"noun",difficulty:"intermediate"},
+{english:"irregular verb",romaji:"fukisoku doushi",hiragana:"ふきそくどうし",alternates:["suru / kuru"],category:"Language & Speech",type:"noun",difficulty:"intermediate"},
+{english:"i-adjective",romaji:"i keiyoushi",hiragana:"いけいようし",alternates:["adjectives ending in i"],category:"Language & Speech",type:"noun",difficulty:"intermediate"},
+{english:"na-adjective",romaji:"na keiyoushi",hiragana:"なけいようし",alternates:["adjectives using na"],category:"Language & Speech",type:"noun",difficulty:"intermediate"},
+{english:"subject",romaji:"shugo",hiragana:"しゅご",alternates:[],category:"Language & Speech",type:"noun",difficulty:"intermediate"},
+{english:"object",romaji:"mokutekigo",hiragana:"もくてきご",alternates:[],category:"Language & Speech",type:"noun",difficulty:"intermediate"},
+{english:"predicate",romaji:"jutsugo",hiragana:"じゅつご",alternates:[],category:"Language & Speech",type:"noun",difficulty:"advanced"},
+{english:"sentence",romaji:"bun",hiragana:"ぶん",alternates:[],category:"Language & Speech",type:"noun",difficulty:"beginner"},
+{english:"grammar",romaji:"bunpou",hiragana:"ぶんぽう",alternates:[],category:"Language & Speech",type:"noun",difficulty:"beginner"},
+{english:"pronunciation",romaji:"hatsuon",hiragana:"はつおん",alternates:[],category:"Language & Speech",type:"noun",difficulty:"beginner"},
+{english:"accent / pitch",romaji:"akusento",hiragana:"アクセント",alternates:[],category:"Language & Speech",type:"noun",difficulty:"intermediate"},
+{english:"conjugation",romaji:"katsuyou",hiragana:"かつよう",alternates:[],category:"Language & Speech",type:"noun",difficulty:"intermediate"},
+{english:"suffix",romaji:"gobi",hiragana:"ごび",alternates:[],category:"Language & Speech",type:"noun",difficulty:"advanced"},
+{english:"prefix",romaji:"settougo",hiragana:"せっとうご",alternates:[],category:"Language & Speech",type:"noun",difficulty:"advanced"},
+{english:"loan word / foreign word",romaji:"gairaigo",hiragana:"がいらいご",alternates:["katakana go"],category:"Language & Speech",type:"noun",difficulty:"intermediate"},
+{english:"native Japanese word",romaji:"wago",hiragana:"わご",alternates:[],category:"Language & Speech",type:"noun",difficulty:"advanced"},
+{english:"Sino-Japanese word",romaji:"kango",hiragana:"かんご",alternates:[],category:"Language & Speech",type:"noun",difficulty:"advanced"},
+{english:"counter suffix",romaji:"josushi",hiragana:"じょすうし",alternates:[],category:"Language & Speech",type:"noun",difficulty:"intermediate"},
+{english:"honorific language",romaji:"keigo",hiragana:"けいご",alternates:["sonkeigo / kenjougo"],category:"Language & Speech",type:"noun",difficulty:"intermediate"},
+{english:"humble language",romaji:"kenjougo",hiragana:"けんじょうご",alternates:[],category:"Language & Speech",type:"noun",difficulty:"intermediate"},
+{english:"respectful language",romaji:"sonkeigo",hiragana:"そんけいご",alternates:[],category:"Language & Speech",type:"noun",difficulty:"intermediate"},
+{english:"casual / plain speech",romaji:"taigou",hiragana:"ためぐち",alternates:["tameguchi (casual speech)"],category:"Language & Speech",type:"noun",difficulty:"intermediate"},
+{english:"written language",romaji:"bungo",hiragana:"ぶんご",alternates:[],category:"Language & Speech",type:"noun",difficulty:"advanced"},
+{english:"spoken language",romaji:"kougo",hiragana:"こうご",alternates:[],category:"Language & Speech",type:"noun",difficulty:"advanced"},
+{english:"every / each (~goto ni)",romaji:"~goto ni",hiragana:"〜ごとに",alternates:[],category:"Particles & Grammar",type:"particle",difficulty:"intermediate"},
+{english:"isn't it? / I suppose (~darou)",romaji:"darou",hiragana:"だろう",alternates:["deshou (polite)"],category:"Common Phrases & Expressions",type:"expression",difficulty:"intermediate"},
+{english:"in addition / furthermore (~soredewa naku)",romaji:"sara ni",hiragana:"さらに",alternates:["sono ue (furthermore)"],category:"Adverbs & Connectors",type:"adverb",difficulty:"intermediate"},
+{english:"on the contrary (~gyaku ni)",romaji:"gyaku ni",hiragana:"ぎゃくに",alternates:[],category:"Adverbs & Connectors",type:"adverb",difficulty:"intermediate"},
+{english:"what is more / besides (~shikamo)",romaji:"shikamo",hiragana:"しかも",alternates:[],category:"Adverbs & Connectors",type:"adverb",difficulty:"intermediate"},
+{english:"on the other hand (~ippou de)",romaji:"ippou de wa",hiragana:"いっぽうでは",alternates:[],category:"Adverbs & Connectors",type:"adverb",difficulty:"intermediate"},
+// ── Dining Out & Shopping + Tae Kim Grammar ─────────
+{english:"What is today's special?",romaji:"kyou no osusume wa nan desu ka",hiragana:"きょうのおすすめはなんですか",alternates:[],category:"Dining Out & Shopping",type:"expression",difficulty:"beginner"},
+{english:"What is this dish?",romaji:"kore wa nan no ryouri desu ka",hiragana:"これはなんのりょうりですか",alternates:[],category:"Dining Out & Shopping",type:"expression",difficulty:"beginner"},
+{english:"I'll have this one",romaji:"kore ni shimasu",hiragana:"これにします",alternates:["kore wo kudasai"],category:"Dining Out & Shopping",type:"expression",difficulty:"beginner"},
+{english:"Same as that please",romaji:"onaji mono wo kudasai",hiragana:"おなじものをください",alternates:[],category:"Dining Out & Shopping",type:"expression",difficulty:"beginner"},
+{english:"I have an allergy to ~",romaji:"~ ni arerugi ga arimasu",hiragana:"〜にアレルギーがあります",alternates:[],category:"Dining Out & Shopping",type:"expression",difficulty:"beginner"},
+{english:"Is there anything without meat?",romaji:"niku nashi no mono wa arimasu ka",hiragana:"にくなしのものはありますか",alternates:[],category:"Dining Out & Shopping",type:"expression",difficulty:"intermediate"},
+{english:"Not spicy please",romaji:"karaku shinai de kudasai",hiragana:"からくしないでください",alternates:[],category:"Dining Out & Shopping",type:"expression",difficulty:"beginner"},
+{english:"A table for two please",romaji:"futari desu",hiragana:"ふたりです",alternates:["futari no seki wo onegaishimasu"],category:"Dining Out & Shopping",type:"expression",difficulty:"beginner"},
+{english:"Do you have a reservation?",romaji:"go yoyaku wa gozaimasu ka",hiragana:"ごよやくはございますか",alternates:[],category:"Dining Out & Shopping",type:"expression",difficulty:"intermediate"},
+{english:"I'd like to make a reservation",romaji:"yoyaku wo shitai no desu ga",hiragana:"よやくをしたいのですが",alternates:[],category:"Dining Out & Shopping",type:"expression",difficulty:"intermediate"},
+{english:"Can we pay separately?",romaji:"betsu betsu ni haraemasu ka",hiragana:"べつべつにはらえますか",alternates:["warikan ni dekimasu ka"],category:"Dining Out & Shopping",type:"expression",difficulty:"intermediate"},
+{english:"Going Dutch / splitting the bill",romaji:"warikan",hiragana:"わりかん",alternates:["betsu betsu (separate payment)"],category:"Dining Out & Shopping",type:"noun",difficulty:"beginner"},
+{english:"It was delicious, thank you",romaji:"oishikatta desu, arigatou gozaimashita",hiragana:"おいしかったです、ありがとうございました",alternates:[],category:"Dining Out & Shopping",type:"expression",difficulty:"beginner"},
+{english:"More please",romaji:"mou sukoshi kudasai",hiragana:"もうすこしください",alternates:["okawari kudasai (refill please)"],category:"Dining Out & Shopping",type:"expression",difficulty:"beginner"},
+{english:"Excuse me! (calling waiter)",romaji:"sumimasen!",hiragana:"すみません！",alternates:[],category:"Dining Out & Shopping",type:"expression",difficulty:"beginner"},
+{english:"To go / takeaway",romaji:"o-mochikaeri de",hiragana:"おもちかえりで",alternates:["teikuauto (takeout loanword)"],category:"Dining Out & Shopping",type:"expression",difficulty:"beginner"},
+{english:"For here (eat in)",romaji:"kochira de meshiagaru",hiragana:"こちらでめしあがる",alternates:["teniira (eat in loanword)"],category:"Dining Out & Shopping",type:"expression",difficulty:"beginner"},
+{english:"Is this seat taken?",romaji:"koko wa aite imasu ka",hiragana:"ここはあいていますか",alternates:[],category:"Dining Out & Shopping",type:"expression",difficulty:"beginner"},
+{english:"Can I see the menu?",romaji:"menyu wo misete moraemasu ka",hiragana:"メニューをみせてもらえますか",alternates:[],category:"Dining Out & Shopping",type:"expression",difficulty:"beginner"},
+{english:"What do you have without ~?",romaji:"~ nashi de nani ga arimasu ka",hiragana:"〜なしでなにがありますか",alternates:[],category:"Dining Out & Shopping",type:"expression",difficulty:"intermediate"},
+{english:"appetizer / starter",romaji:"zenssai",hiragana:"ぜんさい",alternates:["sutaataa (starter loanword)"],category:"Dining Out & Shopping",type:"noun",difficulty:"intermediate"},
+{english:"main course",romaji:"mein ryouri",hiragana:"メインりょうり",alternates:["shushoku (main food)"],category:"Dining Out & Shopping",type:"noun",difficulty:"intermediate"},
+{english:"dessert",romaji:"dezaato",hiragana:"デザート",alternates:[],category:"Dining Out & Shopping",type:"noun",difficulty:"beginner"},
+{english:"non-alcoholic drink",romaji:"sofuto dorinkku",hiragana:"ソフトドリンク",alternates:["nona ru (non-alcoholic)"],category:"Dining Out & Shopping",type:"noun",difficulty:"beginner"},
+{english:"ice water",romaji:"koori mizu",hiragana:"こおりみず",alternates:["aisu uootaa"],category:"Dining Out & Shopping",type:"noun",difficulty:"beginner"},
+{english:"hot towel (oshibori)",romaji:"oshibori",hiragana:"おしぼり",alternates:[],category:"Dining Out & Shopping",type:"noun",difficulty:"beginner"},
+{english:"chopstick rest",romaji:"hashioki",hiragana:"はしおき",alternates:[],category:"Dining Out & Shopping",type:"noun",difficulty:"intermediate"},
+{english:"the food here is good",romaji:"koko no ryouri wa oishii desu",hiragana:"ここのりょうりはおいしいです",alternates:[],category:"Dining Out & Shopping",type:"expression",difficulty:"beginner"},
+{english:"Do you have a bigger size?",romaji:"motto ookii saizu wa arimasu ka",hiragana:"もっとおおきいサイズはありますか",alternates:[],category:"Dining Out & Shopping",type:"expression",difficulty:"beginner"},
+{english:"Do you have a smaller size?",romaji:"motto chiisai saizu wa arimasu ka",hiragana:"もっとちいさいサイズはありますか",alternates:[],category:"Dining Out & Shopping",type:"expression",difficulty:"beginner"},
+{english:"Do you have this in another color?",romaji:"chigau iro wa arimasu ka",hiragana:"ちがういろはありますか",alternates:[],category:"Dining Out & Shopping",type:"expression",difficulty:"beginner"},
+{english:"Can I get a discount?",romaji:"waribiki shite moraemasu ka",hiragana:"わりびきしてもらえますか",alternates:["makeratte moraemasu ka (casual)"],category:"Dining Out & Shopping",type:"expression",difficulty:"intermediate"},
+{english:"I'll take this",romaji:"kore wo kudasai",hiragana:"これをください",alternates:["kore ni shimasu"],category:"Dining Out & Shopping",type:"expression",difficulty:"beginner"},
+{english:"Do you accept credit cards?",romaji:"kurejitto kaado wa tsukaemasu ka",hiragana:"クレジットカードはつかえますか",alternates:[],category:"Dining Out & Shopping",type:"expression",difficulty:"beginner"},
+{english:"Can I pay by IC card?",romaji:"aishii kaado de haraemasuka",hiragana:"ICカードではらえますか",alternates:[],category:"Dining Out & Shopping",type:"expression",difficulty:"beginner"},
+{english:"Do you have a tax-free service?",romaji:"menzei ni narimasu ka",hiragana:"めんぜいになりますか",alternates:[],category:"Dining Out & Shopping",type:"expression",difficulty:"intermediate"},
+{english:"tax-free / duty-free",romaji:"menzei",hiragana:"めんぜい",alternates:["tax-free"],category:"Dining Out & Shopping",type:"noun",difficulty:"intermediate"},
+{english:"Is this on sale?",romaji:"kore wa seeru desu ka",hiragana:"これはセールですか",alternates:[],category:"Dining Out & Shopping",type:"expression",difficulty:"beginner"},
+{english:"Last one in stock",romaji:"zanichi ippindesu",hiragana:"ざんいちいっぴんです",alternates:[],category:"Dining Out & Shopping",type:"expression",difficulty:"intermediate"},
+{english:"plastic bag",romaji:"rejibukuro",hiragana:"レジぶくろ",alternates:["biiniru bukuro (vinyl bag)"],category:"Dining Out & Shopping",type:"noun",difficulty:"beginner"},
+{english:"state of being (is/am/are)",romaji:"da / desu",hiragana:"だ・です",alternates:["de aru (formal written)"],category:"Particles & Grammar",type:"particle",difficulty:"beginner"},
+{english:"negative state (is not)",romaji:"ja nai / ja arimasen",hiragana:"じゃない・じゃありません",alternates:["de wa nai (formal)"],category:"Particles & Grammar",type:"particle",difficulty:"beginner"},
+{english:"past state (was)",romaji:"datta / deshita",hiragana:"だった・でした",alternates:[],category:"Particles & Grammar",type:"particle",difficulty:"beginner"},
+{english:"past negative (was not)",romaji:"ja nakatta / ja arimasen deshita",hiragana:"じゃなかった・じゃありませんでした",alternates:[],category:"Particles & Grammar",type:"particle",difficulty:"beginner"},
+{english:"dictionary form (plain non-past)",romaji:"jisho kei",hiragana:"じしょけい",alternates:["plain form / ru-form"],category:"Language & Speech",type:"noun",difficulty:"intermediate"},
+{english:"polite non-past form",romaji:"masu kei",hiragana:"ますけい",alternates:["-masu form (formal)"],category:"Language & Speech",type:"noun",difficulty:"intermediate"},
+{english:"te-form (connecting verbs)",romaji:"te kei",hiragana:"てけい",alternates:["connects actions, requests"],category:"Language & Speech",type:"noun",difficulty:"intermediate"},
+{english:"ta-form (plain past)",romaji:"ta kei",hiragana:"たけい",alternates:["plain past tense form"],category:"Language & Speech",type:"noun",difficulty:"intermediate"},
+{english:"negative form (plain)",romaji:"nai kei",hiragana:"ないけい",alternates:["-nai form"],category:"Language & Speech",type:"noun",difficulty:"intermediate"},
+{english:"potential form (can do)",romaji:"kanouukei",hiragana:"かのうけい",alternates:["-eru/-rareru potential"],category:"Language & Speech",type:"noun",difficulty:"intermediate"},
+{english:"volitional form (let's/shall)",romaji:"ishikei",hiragana:"いしけい",alternates:["-ou/-you form"],category:"Language & Speech",type:"noun",difficulty:"intermediate"},
+{english:"conditional form (if)",romaji:"jouken kei",hiragana:"じょうけんけい",alternates:["-eba/-tara conditional"],category:"Language & Speech",type:"noun",difficulty:"intermediate"},
+{english:"passive form",romaji:"ukemi kei",hiragana:"うけみけい",alternates:["-reru/-rareru passive"],category:"Language & Speech",type:"noun",difficulty:"intermediate"},
+{english:"causative form (make/let)",romaji:"shieki kei",hiragana:"しえきけい",alternates:["-seru/-saseru causative"],category:"Language & Speech",type:"noun",difficulty:"intermediate"},
+{english:"it is that (explanatory)",romaji:"no da / n da",hiragana:"のだ・んだ",alternates:["gives explanation or seeks one"],category:"Common Phrases & Expressions",type:"expression",difficulty:"intermediate"},
+{english:"has to / should (desirable)",romaji:"hazu da",hiragana:"はずだ",alternates:["expected to be / should logically"],category:"Common Phrases & Expressions",type:"expression",difficulty:"intermediate"},
+{english:"just finished doing",romaji:"ta bakari",hiragana:"たばかり",alternates:["just did / just happened"],category:"Common Phrases & Expressions",type:"expression",difficulty:"intermediate"},
+{english:"doing nothing but",romaji:"te bakari iru",hiragana:"てばかりいる",alternates:["only ever doing X"],category:"Common Phrases & Expressions",type:"expression",difficulty:"intermediate"},
+{english:"in accordance with",romaji:"ni shitagatte",hiragana:"にしたがって",alternates:["following / according to"],category:"Particles & Grammar",type:"particle",difficulty:"advanced"},
+{english:"type / kind / sort",romaji:"shurui",hiragana:"しゅるい",alternates:["kind of thing"],category:"Common Phrases & Expressions",type:"noun",difficulty:"intermediate"},
+{english:"reason / cause",romaji:"wake",hiragana:"わけ",alternates:["that is why / for that reason"],category:"Common Phrases & Expressions",type:"noun",difficulty:"intermediate"},
+{english:"everyone",romaji:"mina san / minasan",hiragana:"みなさん",alternates:["everybody (polite)"],category:"Common Phrases & Expressions",type:"noun",difficulty:"beginner"},
+{english:"everything",romaji:"zenbu",hiragana:"ぜんぶ",alternates:["subete (everything formal)"],category:"Common Phrases & Expressions",type:"noun",difficulty:"beginner"},
+{english:"nothing",romaji:"nani mo nai",hiragana:"なにもない",alternates:["nothing (with negative verb)"],category:"Common Phrases & Expressions",type:"expression",difficulty:"beginner"},
+{english:"anywhere / everywhere",romaji:"doko demo",hiragana:"どこでも",alternates:["everywhere"],category:"Common Phrases & Expressions",type:"adverb",difficulty:"beginner"},
+{english:"nowhere (negative)",romaji:"doko ni mo ikanai",hiragana:"どこにもいかない",alternates:["nowhere (+ negative)"],category:"Common Phrases & Expressions",type:"expression",difficulty:"intermediate"},
+{english:"someone / somebody",romaji:"dareka",hiragana:"だれか",alternates:["somebody"],category:"Common Phrases & Expressions",type:"noun",difficulty:"beginner"},
+{english:"no one (negative)",romaji:"dare mo inai",hiragana:"だれもいない",alternates:["nobody (+ negative verb)"],category:"Common Phrases & Expressions",type:"expression",difficulty:"beginner"},
+{english:"something",romaji:"nanika",hiragana:"なにか",alternates:["something (unknown)"],category:"Common Phrases & Expressions",type:"noun",difficulty:"beginner"},
+{english:"always / at all times",romaji:"itsu mo",hiragana:"いつも",alternates:[],category:"Adverbs & Connectors",type:"adverb",difficulty:"beginner"},
+{english:"never (negative)",romaji:"kesshite ~ nai",hiragana:"けっして〜ない",alternates:["never ever"],category:"Adverbs & Connectors",type:"adverb",difficulty:"intermediate"},
+{english:"without exception / all",romaji:"subete",hiragana:"すべて",alternates:["zenbu (everything)"],category:"Adverbs & Connectors",type:"adverb",difficulty:"intermediate"},
+{english:"roughly / about",romaji:"daitai",hiragana:"だいたい",alternates:["approximately / mostly"],category:"Adverbs & Connectors",type:"adverb",difficulty:"beginner"},
+{english:"completely / entirely",romaji:"kanzen ni",hiragana:"かんぜんに",alternates:["perfectly"],category:"Adverbs & Connectors",type:"adverb",difficulty:"intermediate"},
+{english:"quite / rather",romaji:"nakanaka",hiragana:"なかなか",alternates:["surprisingly / pretty (adv)"],category:"Adverbs & Connectors",type:"adverb",difficulty:"intermediate"},
+{english:"memory",romaji:"kioku",hiragana:"きおく",alternates:["recollection"],category:"Common Phrases & Expressions",type:"noun",difficulty:"intermediate"},
+{english:"experience (lived)",romaji:"keiken",hiragana:"けいけん",alternates:["lived experience"],category:"Common Phrases & Expressions",type:"noun",difficulty:"intermediate"},
+{english:"truth / reality",romaji:"hontou",hiragana:"ほんとう",alternates:["the real thing / truth"],category:"Common Phrases & Expressions",type:"noun",difficulty:"beginner"},
+{english:"lie / falsehood",romaji:"uso",hiragana:"うそ",alternates:["no way! (exclamation)"],category:"Common Phrases & Expressions",type:"noun",difficulty:"beginner"},
+{english:"difference",romaji:"chigai",hiragana:"ちがい",alternates:["distinction"],category:"Common Phrases & Expressions",type:"noun",difficulty:"intermediate"},
+{english:"similarity",romaji:"ruijiten",hiragana:"るいじてん",alternates:["resemblance"],category:"Common Phrases & Expressions",type:"noun",difficulty:"advanced"},
+{english:"advantage / merit",romaji:"riten",hiragana:"りてん",alternates:["merit / plus point"],category:"Common Phrases & Expressions",type:"noun",difficulty:"intermediate"},
+{english:"disadvantage / demerit",romaji:"ketten",hiragana:"けってん",alternates:["fault / weak point"],category:"Common Phrases & Expressions",type:"noun",difficulty:"intermediate"},
+{english:"unnecessary / not needed",romaji:"hitsuyou ga nai",hiragana:"ひつようがない",alternates:["iranai (casual not needed)"],category:"Adjectives (Descriptive Words)",type:"adjective",difficulty:"intermediate"},
+{english:"true / real",romaji:"hontou no",hiragana:"ほんとうの",alternates:["genuine"],category:"Adjectives (Descriptive Words)",type:"adjective",difficulty:"beginner"},
+{english:"strange / weird",romaji:"kimyou na",hiragana:"きみょうな",alternates:["odd / peculiar"],category:"Adjectives (Descriptive Words)",type:"adjective",difficulty:"intermediate"},
+{english:"various / diverse",romaji:"samazama na",hiragana:"さまざまな",alternates:["various kinds of"],category:"Adjectives (Descriptive Words)",type:"adjective",difficulty:"intermediate"},
+{english:"to express",romaji:"hyougen suru",hiragana:"ひょうげんする",alternates:["arawasu (to show/express)"],category:"Verbs (Action Words)",type:"verb",difficulty:"intermediate"},
+{english:"to exist (humble)",romaji:"gozaru",hiragana:"ございます",alternates:["polite form of aru"],category:"Verbs (Action Words)",type:"verb",difficulty:"advanced"},
+{english:"to say (humble)",romaji:"moushimasu",hiragana:"もうします",alternates:["humble say / my name is"],category:"Verbs (Action Words)",type:"verb",difficulty:"advanced"},
+{english:"to give (humble — upward)",romaji:"sashiageru",hiragana:"さしあげる",alternates:["humble give to superior"],category:"Verbs (Action Words)",type:"verb",difficulty:"advanced"},
+{english:"to know (respectful)",romaji:"gozonji",hiragana:"ごぞんじ",alternates:["do you know (polite)"],category:"Verbs (Action Words)",type:"verb",difficulty:"advanced"},
 ];
 
 // ═══════════════════════════════════════════════════════
@@ -3190,6 +3501,7 @@ const CATEGORY_META = {
   "Question Words": "❓",
   "Common Phrases & Expressions": "💬",
   "Technology & Modern Life": "📱",
+  "Dining Out & Shopping": "🍽️",
   "Particles & Grammar": "🔩",
   "Language & Speech": "🗣️",
   "Materials & Texture": "🪵",
@@ -3345,13 +3657,33 @@ function flipCard() {
 function nextCard() {
   if (state.filteredDeck.length === 0) return;
   state.currentIndex = (state.currentIndex + 1) % state.filteredDeck.length;
-  renderCard();
+  navigateCard();
 }
 
 function prevCard() {
   if (state.filteredDeck.length === 0) return;
   state.currentIndex = (state.currentIndex - 1 + state.filteredDeck.length) % state.filteredDeck.length;
-  renderCard();
+  navigateCard();
+}
+
+function navigateCard() {
+  if (state.isFlipped) {
+    const wrapper = document.getElementById('cardWrapper');
+    // Blank both card faces instantly so nothing leaks through during the flip animation
+    document.getElementById('cardEnglish').textContent = '';
+    document.getElementById('cardRomaji').textContent = '';
+    document.getElementById('cardHiragana').textContent = '';
+    document.getElementById('cardBadges').innerHTML = '';
+    document.getElementById('cardBackBadges').innerHTML = '';
+    document.getElementById('cardAlternates').style.display = 'none';
+    // Flip back to front
+    wrapper.classList.remove('flipped');
+    state.isFlipped = false;
+    // After animation completes, populate the new card
+    setTimeout(() => { renderCard(); }, 680);
+  } else {
+    renderCard();
+  }
 }
 
 function toggleShuffle() {
