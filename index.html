@@ -903,16 +903,19 @@ body::before {
     min-height: unset;
   }
 
-  /* ── Left sidebar ── */
+  /* ── Left sidebar — kill sticky so it doesn't overlap card ── */
   .sidebar-left {
     width: 100%;
-    /* Extra margin ensures card shadow doesn't overlap categories */
-    margin-bottom: 2px;
+    position: static !important;
+    top: auto !important;
+    height: auto !important;
+    max-height: none !important;
   }
   .sidebar-left .glass-panel {
     width: 100%;
-    max-height: none;
-    overflow: hidden; /* clip the panel frame */
+    max-height: none !important;
+    overflow: hidden;
+    position: static;
   }
   .panel-header { padding: 10px 12px 6px; }
   .panel-title { font-size: 0.95rem; }
@@ -1038,8 +1041,9 @@ body::before {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    position: static;
-    max-height: none;
+    position: static !important;
+    top: auto !important;
+    max-height: none !important;
     overflow: visible;
   }
 
