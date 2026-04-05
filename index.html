@@ -161,6 +161,8 @@ body::before {
   flex-direction: column;
   overflow: hidden;
   max-height: calc(100vh - 110px);
+  position: relative;
+  z-index: 1;
 }
 
 .panel-header {
@@ -446,9 +448,25 @@ body::before {
 .card-controls {
   width: 100%;
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.controls-nav-row {
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 16px;
+  width: 100%;
+}
+
+.controls-action-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
   flex-wrap: wrap;
 }
 
@@ -886,11 +904,15 @@ body::before {
   }
 
   /* ── Left sidebar ── */
-  .sidebar-left { width: 100%; }
+  .sidebar-left {
+    width: 100%;
+    /* Extra margin ensures card shadow doesn't overlap categories */
+    margin-bottom: 2px;
+  }
   .sidebar-left .glass-panel {
     width: 100%;
     max-height: none;
-    overflow: visible;
+    overflow: hidden; /* clip the panel frame */
   }
   .panel-header { padding: 10px 12px 6px; }
   .panel-title { font-size: 0.95rem; }
@@ -952,13 +974,18 @@ body::before {
   }
 
   /* ── Center — flashcard ── */
-  .center-panel { width: 100%; gap: 12px; }
-  .flashcard-area { width: 100%; }
-  .card-wrapper { width: 100%; min-height: 280px; }
+  .center-panel { width: 100%; gap: 10px; }
+  .flashcard-area {
+    width: 100%;
+    /* Reserve space so card doesn't visually bleed into panel above */
+    position: relative;
+    z-index: 0;
+  }
+  .card-wrapper { width: 100%; min-height: 270px; }
   .card-face {
     width: 100%;
-    min-height: 280px;
-    padding: 22px 16px;
+    min-height: 270px;
+    padding: 20px 16px;
   }
   .card-badges {
     gap: 5px;
@@ -975,32 +1002,36 @@ body::before {
   .alternates-label { font-size: 0.6rem; }
   .alternate-item { font-size: 0.73rem; }
 
-  /* Controls: all contained, wrap cleanly */
+  /* Controls: 2-row layout on mobile */
   .card-controls {
     width: 100%;
-    gap: 6px;
-    flex-wrap: wrap;
-    justify-content: center;
+    gap: 8px;
     padding: 0 4px;
   }
+  .controls-nav-row {
+    gap: 12px;
+    justify-content: center;
+  }
+  .controls-action-row {
+    gap: 7px;
+    justify-content: center;
+  }
   .card-counter {
-    font-size: 0.7rem;
-    min-width: unset;
-    width: 100%;
+    font-size: 0.72rem;
+    min-width: 80px;
     text-align: center;
-    order: -1;
   }
   .ctrl-btn {
-    padding: 10px 12px;
+    padding: 10px 14px;
     font-size: 0.76rem;
     min-height: 44px;
     min-width: unset;
     flex-shrink: 1;
   }
   .ctrl-btn.nav-btn {
-    padding: 10px 16px;
-    font-size: 1.15rem;
-    min-width: 44px;
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    min-width: 52px;
   }
 
   /* ── Right sidebar ── */
@@ -1118,12 +1149,16 @@ body::before {
 
     <!-- CONTROLS -->
     <div class="card-controls">
-      <button class="ctrl-btn nav-btn" onclick="prevCard()" title="Previous">←</button>
-      <button class="ctrl-btn shuffle-btn" id="shuffleBtn" onclick="toggleShuffle()">⇌ Shuffle</button>
-      <div class="card-counter" id="cardCounter">Card 1 / —</div>
-      <button class="ctrl-btn known-btn" id="knownBtn" onclick="toggleKnown()">✓ Known</button>
-      <button class="ctrl-btn review-btn" id="reviewBtn" onclick="toggleReviewKnown()">👁 Review</button>
-      <button class="ctrl-btn nav-btn" onclick="nextCard()" title="Next">→</button>
+      <div class="controls-nav-row">
+        <button class="ctrl-btn nav-btn" onclick="prevCard()" title="Previous">←</button>
+        <div class="card-counter" id="cardCounter">Card 1 / —</div>
+        <button class="ctrl-btn nav-btn" onclick="nextCard()" title="Next">→</button>
+      </div>
+      <div class="controls-action-row">
+        <button class="ctrl-btn shuffle-btn" id="shuffleBtn" onclick="toggleShuffle()">⇌ Shuffle</button>
+        <button class="ctrl-btn known-btn" id="knownBtn" onclick="toggleKnown()">✓ Known</button>
+        <button class="ctrl-btn review-btn" id="reviewBtn" onclick="toggleReviewKnown()">👁 Review</button>
+      </div>
     </div>
   </main>
 
