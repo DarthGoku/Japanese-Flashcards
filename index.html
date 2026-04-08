@@ -599,16 +599,16 @@
     for (let h = 0; h < 24; h++) {
       for (let m = 0; m < 60; m += 30) {
         const totalMin = h * 60 + m;
-        // Always block 2:00 AM – 8:59 AM
+        // Always block 2:00 AM – 8:59 AM (every day)
         if (totalMin >= 120 && totalMin < 540) continue;
+        // Always block 12:30 AM – 1:59 AM (every day, keep only 12:00 AM as end cap)
+        if (totalMin > 0 && totalMin < 120) continue;
         // Weekdays (Mon–Thu): block 9:00 AM – 4:59 PM
         if (weekday && !friday && totalMin >= 540 && totalMin < 1020) continue;
         // Friday: block 9:00 AM – 1:59 PM only
         if (friday && totalMin >= 540 && totalMin < 840) continue;
         // Weekend: block 9:00 AM – 9:59 AM (allow from 10:00 AM = 600 min)
         if (weekend && totalMin >= 540 && totalMin < 600) continue;
-        // Weekdays: block 12:30 AM – 1:59 AM (keep only 12:00 AM)
-        if (weekday && totalMin > 0 && totalMin < 120) continue;
         // Hold midnight aside so it gets appended last
         if (totalMin === 0) { midnightSlot = { h, m, label: formatTime(h, m), totalMin }; continue; }
         slots.push({ h, m, label: formatTime(h, m), totalMin });
